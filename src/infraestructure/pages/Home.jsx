@@ -128,12 +128,11 @@ export default function Home() {
                         {item.descricao}
                       </p>
 
-                      <a
-                        href="#"
+                      <button
                         className="btn btn-outline-primary"
                       >
-                        Saiba mais
-                      </a>
+                         Saiba mais
+                      </button>
 
                     </div>
 
