@@ -7,6 +7,7 @@ import Home from "./infraestructure/pages/Home";
 import Login from "./infraestructure/pages/Login";
 import AdminPanel from "./infraestructure/pages/AdminPanel";
 import Atividade4 from "./infraestructure/pages/Atividade-4";
+import GrupoEsportivo from "./infraestructure/pages/GrupoEsportivo";
 
 function App() {
   return (
@@ -32,6 +33,11 @@ function App() {
         <Route
           path="/atividade-4"
           element={<Atividade4 />}
+        />
+
+        <Route
+          path="/grupo-esportivo"
+          element={<GrupoEsportivo />}
         />
 
       </Routes>
