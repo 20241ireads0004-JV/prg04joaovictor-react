@@ -7,6 +7,7 @@ import Home from "./infraestructure/pages/Home";
 import Login from "./infraestructure/pages/Login";
 import GrupoEsportivo from "./infraestructure/pages/GrupoEsportivo";
 import EventoEsportivo from "./infraestructure/pages/EventoEsportivo";
+import Cadastro from "./infraestructure/pages/Cadastro";
 
 function App() {
   return (
