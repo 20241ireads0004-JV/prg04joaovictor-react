@@ -14,10 +14,6 @@ export default function Login() {
       href: "/"
     },
     {
-      titulo: "Painel Admin",
-      href: "/Admin"
-    },
-    {
       titulo: "Contato",
       href: "/contato"
     }

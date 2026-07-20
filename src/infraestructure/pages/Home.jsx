@@ -11,7 +11,7 @@ export default function Home() {
   const links = [
     {
       titulo: "GRUPOS ESPORTIVOS",
-      href: "/grupos-esportivos",
+      href: "/grupo-esportivo",
     },
     {
       titulo: "LOGIN",
