@@ -2,7 +2,6 @@ import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
-import logo from "../assets/logo.png";
 
 export default function GrupoEsportivo() {
   const links = [
@@ -44,7 +43,7 @@ export default function GrupoEsportivo() {
   return (
     <>
       <Header
-        logo={logo}
+        logo="/logo.png"
         titulo="TODO ESPORTE - Grupos Esportivos"
       />
 

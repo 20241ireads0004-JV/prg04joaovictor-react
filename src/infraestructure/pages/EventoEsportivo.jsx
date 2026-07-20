@@ -2,7 +2,6 @@ import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
-import logo from "../assets/logo.png";
 
 export default function EventoEsportivo() {
 
@@ -46,7 +45,7 @@ export default function EventoEsportivo() {
   return (
     <>
       <Header
-        logo={logo}
+        logo="/logo.png"
         titulo="Eventos Esportivos"
       />
 
