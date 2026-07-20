@@ -4,6 +4,11 @@ import { useState } from "react";
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { useEffect } from "react";
+import {
+    listarGrupos,
+    cadastrarGrupo
+} from "../api/grupoService";
 
 export default function GrupoEsportivo() {
 
@@ -19,30 +24,25 @@ export default function GrupoEsportivo() {
     quantidadeJogadores: ""
   });
 
-  const [grupos, setGrupos] = useState([
-    {
-      id: 1,
-      nome: "Amigos do Futebol",
-      descricao:
-        "Grupo criado para reunir atletas aos finais de semana e organizar partidas amistosas.",
-      dataCriacao: "12/03/2026",
-      esporte: {
-        nome: "Futebol",
-        quantidadeJogadores: 11
-      }
-    },
-    {
-      id: 2,
-      nome: "Basquete IFBA",
-      descricao:
-        "Grupo destinado à prática e treinamento de basquete.",
-      dataCriacao: "22/04/2026",
-      esporte: {
-        nome: "Basquete",
-        quantidadeJogadores: 5
-      }
+  useEffect(() => {
+    carregarGrupos();
+}, []);
+
+const carregarGrupos = async () => {
+
+    try {
+
+        const dados = await listarGrupos();
+
+        setGrupos(dados);
+
+    } catch {
+
+        alert("Erro ao carregar grupos.");
+
     }
-  ]);
+
+};
 
   const handleChange = (e) => {
     setFormulario({

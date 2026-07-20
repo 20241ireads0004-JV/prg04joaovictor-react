@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { cadastrarUsuario } from "../api/usuarioService";
 
 export default function CadastroForm() {
 
@@ -22,44 +23,44 @@ export default function CadastroForm() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+
     e.preventDefault();
 
-    if (
-      !usuario.nome ||
-      !usuario.email ||
-      !usuario.telefone ||
-      !usuario.senha ||
-      !usuario.confirmarSenha
-    ) {
-      setErro("Preencha todos os campos.");
-      return;
-    }
-
-    if (usuario.senha.length < 4) {
-      setErro("A senha deve possuir no mínimo 4 caracteres.");
-      return;
-    }
-
     if (usuario.senha !== usuario.confirmarSenha) {
-      setErro("As senhas não coincidem.");
-      return;
+        setErro("As senhas não coincidem.");
+        return;
     }
 
-    setErro("");
+    try {
 
-    // Objeto que será enviado para a API
-    const novoUsuario = {
-      nome: usuario.nome,
-      email: usuario.email,
-      telefone: usuario.telefone,
-      senha: usuario.senha,
-    };
+        await cadastrarUsuario({
 
-    console.log(novoUsuario);
+            nome: usuario.nome,
 
-    alert("Usuário cadastrado com sucesso!");
-  };
+            email: usuario.email,
+
+            login: usuario.login,
+
+            senha: usuario.senha,
+
+            telefone: usuario.telefone,
+
+            status: true
+
+        });
+
+        alert("Usuário cadastrado!");
+
+    } catch (err) {
+
+        console.log(err);
+
+        setErro("Erro ao cadastrar usuário.");
+
+    }
+
+};
 
   return (
     <main className="flex-grow-1 d-flex align-items-center justify-content-center py-5">
