@@ -34,6 +34,11 @@ function App() {
           element={<EventoEsportivo />}
         />
 
+        <Route 
+        path="/cadastro" 
+        element={<Cadastro />} 
+        />
+
       </Routes>
 
     </BrowserRouter>

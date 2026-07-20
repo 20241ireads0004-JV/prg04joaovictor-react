@@ -58,7 +58,7 @@ export default function Home() {
                 <div className="d-flex gap-3">
 
                   <Link
-                    to="/grupos-esportivos"
+                    to="/grupo-esportivo"
                     className="btn btn-primary btn-lg"
                   >
                     Ver Grupos Esportivos
