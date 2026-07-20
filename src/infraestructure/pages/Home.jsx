@@ -3,40 +3,20 @@
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { Link } from "react-router-dom";
 
 export default function Home() {
 
   // LINKS DA NAVBAR
   const links = [
-    //Atividade 3 e 5 não estão mais no projeto, deixei somente a atividade 4 para testar o menu
     {
-      titulo: "ATIVIDADE 3",
-      href: "/atividade-3"
+      titulo: "GRUPOS ESPORTIVOS",
+      href: "/grupos-esportivos",
     },
     {
-      titulo: "ATIVIDADE 4",
-      href: "/Atividade4"
+      titulo: "LOGIN",
+      href: "/login",
     },
-    {
-      titulo: "ATIVIDADE 5",
-      href: "/atividade-5"
-    }
-  ];
-
-  // CARDS
-  const funcionalidades = [
-    {
-      titulo: "📋 Campeonatos",
-      descricao: "Crie e gerencie campeonatos esportivos com facilidade."
-    },
-    {
-      titulo: "👥 Jogadores",
-      descricao: "Cadastre e controle todos os jogadores participantes."
-    },
-    {
-      titulo: "🏆 Resultados",
-      descricao: "Registre e acompanhe todos os resultados das partidas."
-    }
   ];
 
   return (
@@ -52,9 +32,9 @@ export default function Home() {
       <Navbar links={links} />
 
       {/* MAIN */}
-      <main>
+      <main className="flex-grow-1">
 
-        {/* HERO SECTION */}
+        {/* HERO */}
         <section className="py-5 bg-light">
 
           <div className="container">
@@ -62,32 +42,46 @@ export default function Home() {
             <div className="row align-items-center">
 
               {/* TEXTO */}
-              <div className="col-lg-6 mb-4 mb-lg-0">
+              <div className="col-lg-6">
 
-                <h2 className="display-4 fw-bold text-primary">
-                  Bem-vindo ao TODO ESPORTE
-                </h2>
+                <h1 className="display-4 fw-bold text-primary mb-4">
+                  Encontre o grupo esportivo ideal para você.
+                </h1>
 
-                <p className="lead text-muted">
-                  Gerencie campeonatos, jogadores e resultados de forma prática e eficiente.
+                <p className="lead text-secondary mb-4">
+                  O <strong>TODO ESPORTE</strong> conecta pessoas apaixonadas por
+                  esportes a grupos esportivos da sua região. Descubra novos
+                  grupos, participe de eventos, conheça atletas e faça parte de
+                  uma comunidade que incentiva a prática esportiva.
                 </p>
 
-                <a
-                  href="/login"
-                  className="btn btn-primary btn-lg"
-                >
-                  Acessar Painel
-                </a>
+                <div className="d-flex gap-3">
+
+                  <Link
+                    to="/grupos-esportivos"
+                    className="btn btn-primary btn-lg"
+                  >
+                    Ver Grupos Esportivos
+                  </Link>
+
+                  <Link
+                    to="/login"
+                    className="btn btn-outline-primary btn-lg"
+                  >
+                    Entrar
+                  </Link>
+
+                </div>
 
               </div>
 
               {/* IMAGEM */}
-              <div className="col-lg-6">
+              <div className="col-lg-6 text-center mt-5 mt-lg-0">
 
                 <img
                   src="/hero.png"
-                  alt="Esporte"
-                  className="img-fluid rounded"
+                  alt="Pessoas praticando esportes"
+                  className="img-fluid rounded shadow"
                 />
 
               </div>
@@ -98,51 +92,22 @@ export default function Home() {
 
         </section>
 
-        {/* CARDS */}
+        {/* SOBRE */}
         <section className="py-5">
 
-          <div className="container">
+          <div className="container text-center">
 
-            <h3 className="text-center mb-5 fw-bold">
-              Funcionalidades Principais
-            </h3>
+            <h2 className="fw-bold text-primary mb-4">
+              O que é o TODO ESPORTE?
+            </h2>
 
-            <div className="row g-4">
-
-              {funcionalidades.map((item, index) => (
-
-                <div
-                  className="col-md-6 col-lg-4"
-                  key={index}
-                >
-
-                  <div className="card border-0 shadow-sm h-100 hover-card">
-
-                    <div className="card-body">
-
-                      <h5 className="card-title text-primary fw-bold">
-                        {item.titulo}
-                      </h5>
-
-                      <p className="card-text text-muted">
-                        {item.descricao}
-                      </p>
-
-                      <button
-                        className="btn btn-outline-primary"
-                      >
-                         Saiba mais
-                      </button>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-              ))}
-
-            </div>
+            <p className="lead text-muted mx-auto" style={{ maxWidth: "900px" }}>
+              Nossa plataforma foi criada para facilitar a divulgação de grupos
+              esportivos e aproximar pessoas que compartilham a mesma paixão pelo
+              esporte. Seja futebol, vôlei, basquete, corrida, ciclismo ou
+              qualquer outra modalidade, aqui você encontra grupos organizados e
+              pode participar de novas experiências esportivas.
+            </p>
 
           </div>
 
