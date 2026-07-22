@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { login } from "../api/usuarioApi";
 
 export default function LoginForm() {
 
@@ -9,28 +10,31 @@ export default function LoginForm() {
   const [erro, setErro] = useState("");
 
   // SUBMIT
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+
     e.preventDefault();
 
-    if (!email || !senha) {
-      setErro("Preencha todos os campos.");
-      return;
+    try {
+
+        const response = await login({
+
+            login: email,
+
+            senha: senha
+
+        });
+
+        console.log(response.data);
+
+        alert("Login realizado!");
+
+    } catch (erro) {
+
+        setErro("Login inválido");
+
     }
 
-    if (senha.length < 4) {
-      setErro("A senha deve conter no mínimo 4 caracteres.");
-      return;
-    }
-
-    setErro("");
-
-    console.log({
-      email,
-      senha
-    });
-
-    alert("Login realizado com sucesso!");
-  };
+};
 
   return (
     <main className="flex-grow-1 d-flex align-items-center justify-content-center py-5">

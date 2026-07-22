@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { cadastrarUsuario } from "../api/usuarioService";
+import { cadastrarUsuario } from "../api/usuarioApi";
 
 export default function CadastroForm() {
 
@@ -24,8 +24,18 @@ export default function CadastroForm() {
   };
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
+
+    if (
+        !usuario.nome ||
+        !usuario.email ||
+        !usuario.telefone ||
+        !usuario.senha ||
+        !usuario.confirmarSenha
+    ) {
+        setErro("Preencha todos os campos.");
+        return;
+    }
 
     if (usuario.senha !== usuario.confirmarSenha) {
         setErro("As senhas não coincidem.");
@@ -35,26 +45,24 @@ export default function CadastroForm() {
     try {
 
         await cadastrarUsuario({
-
             nome: usuario.nome,
-
             email: usuario.email,
 
-            login: usuario.login,
+            // seu DTO exige login
+            login: usuario.email,
 
             senha: usuario.senha,
-
             telefone: usuario.telefone,
 
+            // seu DTO exige status
             status: true
-
         });
 
-        alert("Usuário cadastrado!");
+        alert("Usuário cadastrado com sucesso!");
 
-    } catch (err) {
+    } catch (erro) {
 
-        console.log(err);
+        console.log(erro);
 
         setErro("Erro ao cadastrar usuário.");
 

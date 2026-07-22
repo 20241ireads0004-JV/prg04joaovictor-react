@@ -1,7 +1,11 @@
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { useEffect, useState } from "react";
 
+import {
+    listarEventos
+} from "../api/eventoApi";
 
 export default function EventoEsportivo() {
 
@@ -10,38 +14,32 @@ export default function EventoEsportivo() {
     { titulo: "Grupos", href: "/grupos" }
   ];
 
-  const eventos = [
-    {
-      id: 1,
-      data: "25/07/2026",
-      horario: "09:00",
-      vagas: 10,
-      descricao: "Partida amistosa entre integrantes do grupo.",
+  const [eventos, setEventos] = useState([]);
 
-      local: {
-        nome: "Arena IFBA",
-        endereco: "Rua Central, nº 120",
-        bairro: "Centro",
-        cidade: "Irecê"
-      }
-    },
+  useEffect(() => {
 
-    {
-      id: 2,
-      data: "10/08/2026",
-      horario: "18:30",
-      vagas: 6,
-      descricao: "Treino aberto para novos participantes.",
+    carregarEventos();
 
-      local: {
-        nome: "Ginásio Municipal",
-        endereco: "Av. Brasil, 500",
-        bairro: "Copacabana",
-        cidade: "Irecê"
-      }
+}, []);
+
+const carregarEventos = async () => {
+
+    try {
+
+        const response =
+            await listarEventos();
+
+        setEventos(response.data.content);
+
     }
-  ];
 
+    catch (erro) {
+
+        console.log(erro);
+
+    }
+
+};
   return (
     <>
       <Header
@@ -82,17 +80,6 @@ export default function EventoEsportivo() {
                 </div>
 
                 <div className="col-md-6">
-
-                  <h5>Local</h5>
-
-                  <p><strong>Nome:</strong> {evento.local.nome}</p>
-
-                  <p><strong>Endereço:</strong> {evento.local.endereco}</p>
-
-                  <p><strong>Bairro:</strong> {evento.local.bairro}</p>
-
-                  <p><strong>Cidade:</strong> {evento.local.cidade}</p>
-
                 </div>
 
               </div>

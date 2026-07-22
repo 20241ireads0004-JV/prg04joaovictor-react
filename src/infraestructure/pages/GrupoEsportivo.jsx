@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import {
     listarGrupos,
     cadastrarGrupo
-} from "../api/grupoService";
+} from "../api/grupoApi";
 
 export default function GrupoEsportivo() {
 
@@ -87,6 +87,8 @@ const carregarGrupos = async () => {
     alert("Grupo esportivo cadastrado com sucesso!");
   };
 
+  const [grupos, setGrupos] = useState([]);
+  
   return (
     <>
       <Header
