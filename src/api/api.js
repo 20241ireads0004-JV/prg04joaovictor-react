@@ -10,8 +10,8 @@ export const api = axios.create({
   }
 });
 
-// Exemplo de chamada aos eventos esportivos
-export const getEventos = async () => {
-  const response = await api.get('/eventosesportivos');
-  return response.data;
-};
+// ==========================================
+// EXPORTAÇÃO PADRÃO (DEFAULT EXPORT)
+// ==========================================
+// Adicionar esta linha permite que outros arquivos façam: import api from "./api";
+export default api;
