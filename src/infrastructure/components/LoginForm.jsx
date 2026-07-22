@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { login } from "../api/usuarioApi";
+import { login } from "../../api/usuarioApi";
 
 export default function LoginForm({ onSuccess }) {
   // ESTADOS DO FORMULÁRIO

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { listarGrupos } from "../services/grupoService"; // Ajuste o caminho relativo para a pasta services
+import { listarGrupos } from "../../api/grupoApi"; // Ajuste o caminho relativo para a pasta services
 
 /**
  * Componente responsável por buscar e exibir a lista de grupos esportivos.
