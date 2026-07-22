@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
@@ -9,12 +9,13 @@ export default function CadastrarGrupoEsportivo() {
   const navigate = useNavigate();
 
   const links = [
-    { titulo: "INÍCIO", href: "/" },
+    { titulo: "INÍCIO", href: "/home" },
     { titulo: "GRUPOS", href: "/grupo-esportivo" },
-    { titulo: "LOGIN", href: "/login" }
+    { titulo: "LOGIN", href: "/" }
   ];
 
-  // Estado do formulario
+  const [usuarioLogado, setUsuarioLogado] = useState(null);
+
   const [formulario, setFormulario] = useState({
     nome: "",
     descricao: "",
@@ -22,7 +23,17 @@ export default function CadastrarGrupoEsportivo() {
     quantidadeJogadores: ""
   });
 
-  // Atualiza os valores do formulario conforme o utilizador digita
+  // Carrega os dados do usuario logado no localStorage ao montar o componente
+  useEffect(() => {
+    const usuarioSalvo = localStorage.getItem("usuarioLogado");
+    if (usuarioSalvo) {
+      setUsuarioLogado(JSON.parse(usuarioSalvo));
+    } else {
+      alert("Você precisa estar logado para criar um grupo!");
+      navigate("/login");
+    }
+  }, [navigate]);
+
   const handleChange = (e) => {
     setFormulario({
       ...formulario,
@@ -30,11 +41,9 @@ export default function CadastrarGrupoEsportivo() {
     });
   };
 
-  // Envio do formulario para a API
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validação basica de campos obrigatorios
     if (
       !formulario.nome ||
       !formulario.descricao ||
@@ -45,22 +54,23 @@ export default function CadastrarGrupoEsportivo() {
       return;
     }
 
-    // Monta o DTO esperado pelo Spring Boot
+    // DTO contendo o Administrador (Usuário logado)
     const novoGrupoDTO = {
       nome: formulario.nome,
       descricao: formulario.descricao,
       esporte: {
         nome: formulario.esporte,
         quantidadeJogadores: Number(formulario.quantidadeJogadores)
+      },
+      // Associa o usuario logado como o Administrador
+      administrador: {
+        id: usuarioLogado?.id
       }
     };
 
     try {
-      // Envia os dados para a API
       await cadastrarGrupo(novoGrupoDTO);
-      alert("Grupo esportivo cadastrado com sucesso!");
-
-      // Redireciona automaticamente de volta para a tela de visualizacao
+      alert("Grupo esportivo cadastrado com sucesso! Você é o Administrador.");
       navigate("/grupo-esportivo");
     } catch (erro) {
       console.error("Erro ao cadastrar grupo:", erro);
@@ -77,7 +87,6 @@ export default function CadastrarGrupoEsportivo() {
         <div className="card shadow">
           <div className="card-header bg-success text-white d-flex justify-content-between align-items-center">
             <h3 className="mb-0">Cadastrar Grupo Esportivo</h3>
-            {/* Botao opcional para voltar sem salvar */}
             <Link to="/grupo-esportivo" className="btn btn-outline-light btn-sm">
               Voltar para Grupos
             </Link>
@@ -118,7 +127,7 @@ export default function CadastrarGrupoEsportivo() {
                   name="descricao"
                   value={formulario.descricao}
                   onChange={handleChange}
-                  placeholder="Descreva o grupo, horarios de jogo, local, etc."
+                  placeholder="Descreva o grupo, horários de jogo, local, etc."
                 />
               </div>
 

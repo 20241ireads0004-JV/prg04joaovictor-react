@@ -7,12 +7,35 @@ import api from "./api";
  * @param {Object} grupo - Objeto contendo os dados do grupo (nome, descricao, esporte, etc).
  * @returns {Promise<Object>} Retorna os dados do grupo cadastrado.
  */
-export const cadastrarGrupo = async (grupo) => {
+// Cadastrar novo grupo enviando o DTO
+export const cadastrarGrupo = async (grupoDTO) => {
   try {
-    const response = await api.post("/grupos-esportivos/save", grupo);
+    const response = await api.post("/grupos/save", grupoDTO);
     return response.data;
   } catch (erro) {
-    console.error("Erro ao cadastrar grupo esportivo:", erro);
+    console.error("Erro ao cadastrar grupo:", erro);
+    throw erro;
+  }
+};
+
+// Solicitar entrada em um grupo (Atleta)
+export const solicitarEntrada = async (grupoId, usuarioId) => {
+  try {
+    const response = await api.post(`/grupos/${grupoId}/solicitar`, { usuarioId });
+    return response.data;
+  } catch (erro) {
+    console.error("Erro ao solicitar entrada:", erro);
+    throw erro;
+  }
+};
+
+// Aceitar/Aprovar Atleta no grupo (Apenas Administrador)
+export const aceitarMembro = async (grupoId, atletaId) => {
+  try {
+    const response = await api.post(`/grupos/${grupoId}/aceitar-membro`, { atletaId });
+    return response.data;
+  } catch (erro) {
+    console.error("Erro ao aceitar membro:", erro);
     throw erro;
   }
 };

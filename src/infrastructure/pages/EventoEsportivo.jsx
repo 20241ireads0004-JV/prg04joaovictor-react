@@ -9,7 +9,7 @@ import { listarEventos } from "../../api/eventoApi";
 export default function EventoEsportivo() {
   // Links de navegação para o cabeçalho
   const links = [
-    { titulo: "Início", href: "/" },
+    { titulo: "Início", href: "/home" },
     { titulo: "Grupos", href: "/grupos" }
   ];
 

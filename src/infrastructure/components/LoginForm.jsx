@@ -3,13 +3,11 @@ import { Link } from "react-router-dom";
 import { login } from "../../api/usuarioApi";
 
 export default function LoginForm({ onSuccess }) {
-  // ESTADOS DO FORMULÁRIO
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(false);
 
-  // PROCESSAMENTO DO LOGIN
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErro("");
@@ -17,13 +15,14 @@ export default function LoginForm({ onSuccess }) {
     try {
       setCarregando(true);
 
-      // Chamada da API para realizar o login
       const dadosUsuario = await login({
         login: email,
         senha: senha,
       });
 
-      // Se fornecido onSuccess pela pagina mae, notifica sucesso
+      // SALVA O USUÁRIO LOGADO NO LOCALSTORAGE
+      localStorage.setItem("usuarioLogado", JSON.stringify(dadosUsuario));
+
       if (onSuccess) {
         onSuccess(dadosUsuario);
       } else {
@@ -44,14 +43,11 @@ export default function LoginForm({ onSuccess }) {
           <div className="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
             <div className="card border-0 shadow-lg">
               <div className="card-body p-5">
-                
                 <h2 className="text-center text-primary fw-bold mb-4">
                   Faça seu Login
                 </h2>
 
                 <form onSubmit={handleSubmit}>
-                  
-                  {/* CAMPO EMAIL */}
                   <div className="mb-4">
                     <input
                       type="email"
@@ -64,7 +60,6 @@ export default function LoginForm({ onSuccess }) {
                     />
                   </div>
 
-                  {/* CAMPO SENHA */}
                   <div className="mb-4">
                     <input
                       type="password"
@@ -78,7 +73,6 @@ export default function LoginForm({ onSuccess }) {
                     />
                   </div>
 
-                  {/* BOTÃO SUBMIT */}
                   <button
                     type="submit"
                     className="btn btn-primary btn-lg w-100 fw-bold"
@@ -87,31 +81,22 @@ export default function LoginForm({ onSuccess }) {
                     {carregando ? "A entrar..." : "Entrar"}
                   </button>
 
-                  {/* MENSAGEM DE ERRO */}
                   {erro && (
                     <div className="alert alert-danger mt-3 mb-0 text-center" role="alert">
                       {erro}
                     </div>
                   )}
-
                 </form>
 
-                {/* LINKS DE NAVEGAÇÃO - APENAS CADASTRO */}
                 <div className="text-center mt-4">
                   <p className="text-muted mb-2">
                     Ainda não possui uma conta?
                   </p>
 
-                  <Link
-                    to="/cadastro"
-                    className="btn btn-success w-100"
-                  >
+                  <Link to="/cadastro" className="btn btn-success w-100">
                     Criar Conta
                   </Link>
-
-                  {/* NOTA: O botao 'Voltar para Home' foi removido conforme solicitado */}
                 </div>
-
               </div>
             </div>
           </div>

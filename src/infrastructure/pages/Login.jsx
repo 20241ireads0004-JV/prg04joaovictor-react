@@ -12,10 +12,6 @@ export default function Login() {
   // Links de navegação para o cabeçalho
   const links = [
     {
-      titulo: "Home",
-      href: "/"
-    },
-    {
       titulo: "Contato",
       href: "/contato"
     }

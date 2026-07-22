@@ -17,7 +17,7 @@ export default function Home() {
     },
     {
       titulo: "LOGIN",
-      href: "/login",
+      href: "/",
     },
   ];
 
