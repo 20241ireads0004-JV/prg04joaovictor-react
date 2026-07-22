@@ -1,5 +1,3 @@
-// src/components/LoginForm.jsx
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { login } from "../../api/usuarioApi";
@@ -19,13 +17,13 @@ export default function LoginForm({ onSuccess }) {
     try {
       setCarregando(true);
 
-      // A função login() já retorna os dados diretamente da API
+      // Chamada da API para realizar o login
       const dadosUsuario = await login({
         login: email,
         senha: senha,
       });
 
-      // Se a página mãe forneceu a prop onSuccess, notifica o login com sucesso
+      // Se fornecido onSuccess pela pagina mae, notifica sucesso
       if (onSuccess) {
         onSuccess(dadosUsuario);
       } else {
@@ -98,7 +96,7 @@ export default function LoginForm({ onSuccess }) {
 
                 </form>
 
-                {/* LINKS DE NAVEGAÇÃO */}
+                {/* LINKS DE NAVEGAÇÃO - APENAS CADASTRO */}
                 <div className="text-center mt-4">
                   <p className="text-muted mb-2">
                     Ainda não possui uma conta?
@@ -106,17 +104,12 @@ export default function LoginForm({ onSuccess }) {
 
                   <Link
                     to="/cadastro"
-                    className="btn btn-success w-100 mb-3"
+                    className="btn btn-success w-100"
                   >
                     Criar Conta
                   </Link>
 
-                  <Link
-                    to="/"
-                    className="btn btn-outline-secondary w-100"
-                  >
-                    Voltar para Home
-                  </Link>
+                  {/* NOTA: O botao 'Voltar para Home' foi removido conforme solicitado */}
                 </div>
 
               </div>

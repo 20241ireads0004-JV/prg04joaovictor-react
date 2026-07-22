@@ -1,5 +1,3 @@
-// src/pages/Home.jsx
-
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -7,7 +5,7 @@ import { Link } from "react-router-dom";
 
 export default function Home() {
 
-  // Links completos da Navbar alinhados às rotas do projeto
+  // Links da Navbar sem a opcao de CADASTRO
   const links = [
     {
       titulo: "GRUPOS ESPORTIVOS",
@@ -20,10 +18,6 @@ export default function Home() {
     {
       titulo: "LOGIN",
       href: "/login",
-    },
-    {
-      titulo: "CADASTRO",
-      href: "/cadastro",
     },
   ];
 
@@ -148,25 +142,9 @@ export default function Home() {
                 </div>
               </div>
             </div>
-
           </div>
         </section>
-
-        {/* BANNER DE CHAMADA PARA CADASTRO */}
-        <section className="py-5 bg-primary text-white text-center">
-          <div className="container">
-            <h2 className="fw-bold mb-3">Quer organizar o seu próprio grupo?</h2>
-            <p className="lead mb-4">
-              Crie uma conta gratuita agora mesmo e comece a divulgar os seus treinos e eventos!
-            </p>
-            <Link to="/cadastro" className="btn btn-light btn-lg fw-bold text-primary">
-              Criar Conta Gratuita
-            </Link>
-          </div>
-        </section>
-
       </main>
-
       {/* RODAPÉ */}
       <Footer />
 
