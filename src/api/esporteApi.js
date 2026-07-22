@@ -1,41 +1,89 @@
+// src/api/esporteApi.js
+
 import api from "./api";
 
 /**
- * Cadastra um novo esporte.
- * @param {Object} esporte - Dados do esporte.
+ * Cadastra um novo esporte no backend.
+ * @param {Object} esporte - Objeto contendo os dados do esporte (ex: nome, quantidadeJogadores).
+ * @returns {Promise<Object>} Dados do esporte cadastrado retornado pela API.
  */
-export const cadastrarEsporte = (esporte) =>
-    api.post("/esportes/save", esporte);
-
-/**
- * Lista os esportes com paginação.
- * Retorna diretamente o array 'content'.
- * @param {number} page - Número da página (padrão: 0).
- * @param {number} size - Quantidade de itens por página (padrão: 10).
- */
-export const listarEsportes = async (page = 0, size = 10) => {
-    const response = await api.get(`/esportes/findAll?page=${page}&size=${size}`);
-    return response.data?.content || [];
+export const cadastrarEsporte = async (esporte) => {
+  try {
+    const response = await api.post("/esportes/save", esporte);
+    return response.data;
+  } catch (erro) {
+    console.error("Erro ao cadastrar esporte:", erro);
+    throw erro;
+  }
 };
 
 /**
- * Busca um esporte pelo ID.
- * @param {number|string} id - Identificador do esporte.
+ * Lista os esportes cadastrados com suporte a paginação do Spring Boot.
+ * Retorna diretamente o array de esportes contido em 'content'.
+ * @param {number} page - Número da página a consultar (padrão: 0).
+ * @param {number} size - Quantidade de itens por página (padrão: 10).
+ * @returns {Promise<Array>} Lista de esportes cadastrados.
  */
-export const buscarEsporte = (id) =>
-    api.get(`/esportes/findById/${id}`);
+export const listarEsportes = async (page = 0, size = 10) => {
+  try {
+    const response = await api.get(`/esportes/findAll?page=${page}&size=${size}`);
+
+    // Tratamento seguro: verifica se o Spring retornou um Page ou uma lista direta
+    if (response.data && Array.isArray(response.data.content)) {
+      return response.data.content;
+    } else if (Array.isArray(response.data)) {
+      return response.data;
+    }
+
+    return [];
+  } catch (erro) {
+    console.error("Erro ao listar esportes:", erro);
+    throw erro;
+  }
+};
 
 /**
- * Atualiza um esporte existente.
- * @param {number|string} id - Identificador do esporte.
- * @param {Object} esporte - Novos dados do esporte.
+ * Busca um esporte específico pelo seu ID.
+ * @param {number|string} id - Identificador único do esporte.
+ * @returns {Promise<Object>} Dados do esporte encontrado.
  */
-export const atualizarEsporte = (id, esporte) =>
-    api.put(`/esportes/update/${id}`, esporte);
+export const buscarEsporte = async (id) => {
+  try {
+    const response = await api.get(`/esportes/findById/${id}`);
+    return response.data;
+  } catch (erro) {
+    console.error(`Erro ao buscar esporte com ID ${id}:`, erro);
+    throw erro;
+  }
+};
 
 /**
- * Exclui um esporte pelo ID.
+ * Atualiza os dados de um esporte existente.
  * @param {number|string} id - Identificador do esporte.
+ * @param {Object} esporte - Novos dados do esporte a atualizar.
+ * @returns {Promise<Object>} Dados do esporte atualizado.
  */
-export const excluirEsporte = (id) =>
-    api.delete(`/esportes/delete/${id}`);
+export const atualizarEsporte = async (id, esporte) => {
+  try {
+    const response = await api.put(`/esportes/update/${id}`, esporte);
+    return response.data;
+  } catch (erro) {
+    console.error(`Erro ao atualizar esporte com ID ${id}:`, erro);
+    throw erro;
+  }
+};
+
+/**
+ * Exclui um esporte do sistema pelo seu ID.
+ * @param {number|string} id - Identificador do esporte a ser removido.
+ * @returns {Promise<Object>} Resposta de confirmação do backend.
+ */
+export const excluirEsporte = async (id) => {
+  try {
+    const response = await api.delete(`/esportes/delete/${id}`);
+    return response.data;
+  } catch (erro) {
+    console.error(`Erro ao excluir esporte com ID ${id}:`, erro);
+    throw erro;
+  }
+};
