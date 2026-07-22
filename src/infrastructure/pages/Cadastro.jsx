@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { cadastrarUsuario } from "../api/usuarioApi";
+import { cadastrarUsuario } from "../../api/usuarioApi";
 
 export default function CadastroForm() {
   const navigate = useNavigate();

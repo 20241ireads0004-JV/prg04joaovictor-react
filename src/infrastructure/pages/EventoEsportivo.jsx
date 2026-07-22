@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { listarEventos } from "../api/eventoApi";
+import { listarEventos } from "../../api/eventoApi";
 
 export default function EventoEsportivo() {
   // Links de navegação para o cabeçalho

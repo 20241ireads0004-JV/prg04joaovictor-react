@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { listarGrupos, cadastrarGrupo } from "../api/grupoApi";
+import { listarGrupos, cadastrarGrupo } from "../../api/grupoApi";
 
 export default function GrupoEsportivo() {
   const links = [
