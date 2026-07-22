@@ -3,11 +3,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // PÁGINAS
-import Home from "./infraestructure/pages/Home";
-import Login from "./infraestructure/pages/Login";
-import GrupoEsportivo from "./infraestructure/pages/GrupoEsportivo";
-import EventoEsportivo from "./infraestructure/pages/EventoEsportivo";
-import Cadastro from "./infraestructure/pages/Cadastro";
+import Home from "./infrastructure/pages/Home";
+import Login from "./infrastructure/pages/Login";
+import GrupoEsportivo from "./infrastructure/pages/GrupoEsportivo";
+import EventoEsportivo from "./infrastructure/pages/EventoEsportivo";
+import Cadastro from "./infrastructure/pages/Cadastro";
 
 function App() {
   return (
