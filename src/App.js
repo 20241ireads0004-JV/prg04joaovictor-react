@@ -40,6 +40,8 @@ function App() {
         element={<Cadastro />} 
         />
 
+        <Route path="/cadastrar-grupo-esportivo" 
+        element={<CadastrarGrupoEsportivo />} />
       </Routes>
 
     </BrowserRouter>
