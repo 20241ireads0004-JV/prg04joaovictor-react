@@ -27,7 +27,7 @@ export default function Login() {
     }
     
     // Redireciona para a página principal após autenticação
-    navigate("/");
+    navigate("/home");
   };
 
   return (

@@ -193,19 +193,11 @@ export default function CadastroForm() {
             </p>
 
             <Link
-              to="/login"
+              to="/"
               className="btn btn-outline-primary w-100 mb-2"
             >
               Fazer Login
             </Link>
-
-            <Link
-              to="/"
-              className="btn btn-outline-secondary w-100"
-            >
-              Voltar para Home
-            </Link>
-
           </div>
         </div>
       </div>
