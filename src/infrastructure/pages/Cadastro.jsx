@@ -73,7 +73,7 @@ export default function CadastroForm() {
 
       // Aguarda 2 segundos para o utilizador ler a mensagem e redireciona
       setTimeout(() => {
-        navigate("/login");
+        navigate("/");
       }, 2000);
 
     } catch (error) {
