@@ -4,16 +4,17 @@ import api from "./api";
 
 /**
  * Cadastra um novo grupo esportivo no backend.
- * @param {Object} grupo - Objeto contendo os dados do grupo (nome, descricao, esporte, etc).
+ * @param {Object} grupoDTO - Dados do grupo (nome, descricao, dataCriacao, esporteId).
+ * @param {number|string} administradorId - ID do utilizador logado que será o admin.
  * @returns {Promise<Object>} Retorna os dados do grupo cadastrado.
  */
-// Cadastrar novo grupo enviando o DTO
-export const cadastrarGrupo = async (grupoDTO) => {
+export const cadastrarGrupo = async (grupoDTO, administradorId) => {
   try {
-    const response = await api.post("/grupos/save", grupoDTO);
+    // Chamada ajustada para a rota /grupos-esportivos/save/{administradorId}
+    const response = await api.post(`/grupos-esportivos/save/${administradorId}`, grupoDTO);
     return response.data;
   } catch (erro) {
-    console.error("Erro ao cadastrar grupo:", erro);
+    console.error("Erro ao cadastrar grupo no servidor:", erro);
     throw erro;
   }
 };

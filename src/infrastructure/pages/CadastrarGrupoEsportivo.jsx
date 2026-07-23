@@ -4,6 +4,7 @@ import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { cadastrarGrupo } from "../../api/grupoApi";
+import { listarEsportes } from "../../api/esporteApi";
 
 export default function CadastrarGrupoEsportivo() {
   const navigate = useNavigate();
@@ -15,23 +16,38 @@ export default function CadastrarGrupoEsportivo() {
   ];
 
   const [usuarioLogado, setUsuarioLogado] = useState(null);
+  const [esportesDisponiveis, setEsportesDisponiveis] = useState([]);
 
   const [formulario, setFormulario] = useState({
     nome: "",
     descricao: "",
-    esporte: "",
-    quantidadeJogadores: ""
+    esporteNome: "", // Guarda o nome selecionado no <select>
   });
 
-  // Carrega os dados do usuario logado no localStorage ao montar o componente
   useEffect(() => {
+    // 1. Verifica autenticação do usuário
     const usuarioSalvo = localStorage.getItem("usuarioLogado");
     if (usuarioSalvo) {
       setUsuarioLogado(JSON.parse(usuarioSalvo));
     } else {
       alert("Você precisa estar logado para criar um grupo!");
-      navigate("/login");
+      navigate("/");
     }
+
+    // 2. Carrega a lista de esportes para preencher o select
+    const carregarEsportes = async () => {
+      try {
+        const lista = await listarEsportes();
+        setEsportesDisponiveis(lista);
+        if (lista.length > 0) {
+          setFormulario((prev) => ({ ...prev, esporteNome: lista[0].nome }));
+        }
+      } catch (erro) {
+        console.error("Não foi possível carregar a lista de esportes:", erro);
+      }
+    };
+
+    carregarEsportes();
   }, [navigate]);
 
   const handleChange = (e) => {
@@ -44,37 +60,27 @@ export default function CadastrarGrupoEsportivo() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (
-      !formulario.nome ||
-      !formulario.descricao ||
-      !formulario.esporte ||
-      !formulario.quantidadeJogadores
-    ) {
-      alert("Preencha todos os campos.");
+    if (!formulario.nome || !formulario.descricao || !formulario.esporteNome) {
+      alert("Preencha todos os campos obrigatórios.");
       return;
     }
 
-    // DTO contendo o Administrador (Usuário logado)
+    const dataAtual = new Date().toISOString().split("T")[0];
+
     const novoGrupoDTO = {
       nome: formulario.nome,
       descricao: formulario.descricao,
-      esporte: {
-        nome: formulario.esporte,
-        quantidadeJogadores: Number(formulario.quantidadeJogadores)
-      },
-      // Associa o usuario logado como o Administrador
-      administrador: {
-        id: usuarioLogado?.id
-      }
+      dataCriacao: dataAtual,
+      esporteNome: formulario.esporteNome
     };
 
     try {
-      await cadastrarGrupo(novoGrupoDTO);
-      alert("Grupo esportivo cadastrado com sucesso! Você é o Administrador.");
+      await cadastrarGrupo(novoGrupoDTO, usuarioLogado.id);
+      alert("Grupo esportivo cadastrado com sucesso!");
       navigate("/grupo-esportivo");
     } catch (erro) {
       console.error("Erro ao cadastrar grupo:", erro);
-      alert("Erro ao cadastrar grupo esportivo.");
+      alert("Erro ao cadastrar grupo esportivo. Verifique os dados.");
     }
   };
 
@@ -96,53 +102,49 @@ export default function CadastrarGrupoEsportivo() {
             <form onSubmit={handleSubmit}>
               <div className="row">
                 <div className="col-md-6 mb-3">
-                  <label className="form-label">Nome do Grupo</label>
+                  <label className="form-label">Nome do Grupo *</label>
                   <input
                     type="text"
                     className="form-control"
                     name="nome"
                     value={formulario.nome}
                     onChange={handleChange}
-                    placeholder="Ex: Amigos do Futebol"
+                    placeholder="Ex: Baba do IFBA Superior"
+                    required
                   />
                 </div>
+
+                {/* Seleção do Esporte via Select Dropdown */}
                 <div className="col-md-6 mb-3">
-                  <label className="form-label">Esporte</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="esporte"
-                    value={formulario.esporte}
+                  <label className="form-label">Esporte *</label>
+                  <select
+                    className="form-select"
+                    name="esporteNome"
+                    value={formulario.esporteNome}
                     onChange={handleChange}
-                    placeholder="Ex: Futebol, Vôlei, Basquete"
-                  />
+                    required
+                  >
+                    <option value="">Selecione um esporte...</option>
+                    {esportesDisponiveis.map((esporte) => (
+                      <option key={esporte.id} value={esporte.nome}>
+                        {esporte.nome}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
               <div className="mb-3">
-                <label className="form-label">Descrição</label>
+                <label className="form-label">Descrição *</label>
                 <textarea
                   className="form-control"
                   rows="4"
                   name="descricao"
                   value={formulario.descricao}
                   onChange={handleChange}
-                  placeholder="Descreva o grupo, horários de jogo, local, etc."
+                  placeholder="Descreva o grupo..."
+                  required
                 />
-              </div>
-
-              <div className="row">
-                <div className="col-md-6 mb-3">
-                  <label className="form-label">Quantidade de Jogadores</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    name="quantidadeJogadores"
-                    value={formulario.quantidadeJogadores}
-                    onChange={handleChange}
-                    placeholder="Ex: 11"
-                  />
-                </div>
               </div>
 
               <div className="d-flex gap-2">

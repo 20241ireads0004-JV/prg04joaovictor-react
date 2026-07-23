@@ -19,16 +19,16 @@ export const cadastrarEsporte = async (esporte) => {
 
 /**
  * Lista os esportes cadastrados com suporte a paginação do Spring Boot.
- * Retorna diretamente o array de esportes contido em 'content'.
+ * Extrai e retorna diretamente o array de esportes contido na propriedade 'content'.
  * @param {number} page - Número da página a consultar (padrão: 0).
- * @param {number} size - Quantidade de itens por página (padrão: 10).
+ * @param {number} size - Quantidade de itens por página (padrão: 50 para trazer todos no select).
  * @returns {Promise<Array>} Lista de esportes cadastrados.
  */
-export const listarEsportes = async (page = 0, size = 10) => {
+export const listarEsportes = async (page = 0, size = 50) => {
   try {
     const response = await api.get(`/esportes/findAll?page=${page}&size=${size}`);
 
-    // Tratamento seguro: verifica se o Spring retornou um Page ou uma lista direta
+    // Tratamento seguro: verifica se o Spring retornou um Page (com .content) ou uma lista direta
     if (response.data && Array.isArray(response.data.content)) {
       return response.data.content;
     } else if (Array.isArray(response.data)) {
@@ -37,7 +37,7 @@ export const listarEsportes = async (page = 0, size = 10) => {
 
     return [];
   } catch (erro) {
-    console.error("Erro ao listar esportes:", erro);
+    console.error("Erro ao listar esportes no servidor:", erro);
     throw erro;
   }
 };
