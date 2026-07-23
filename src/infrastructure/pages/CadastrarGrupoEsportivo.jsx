@@ -21,25 +21,30 @@ export default function CadastrarGrupoEsportivo() {
   const [formulario, setFormulario] = useState({
     nome: "",
     descricao: "",
-    esporteNome: "", // Guarda o nome selecionado no <select>
+    esporteNome: "", // Armazena o nome exato do esporte selecionado
   });
 
   useEffect(() => {
-    // 1. Verifica autenticação do usuário
+    // 1. Verifica se o utilizador está autenticado no localStorage
     const usuarioSalvo = localStorage.getItem("usuarioLogado");
+    
     if (usuarioSalvo) {
-      setUsuarioLogado(JSON.parse(usuarioSalvo));
+      const usuarioParsed = JSON.parse(usuarioSalvo);
+      setUsuarioLogado(usuarioParsed);
     } else {
       alert("Você precisa estar logado para criar um grupo!");
       navigate("/");
+      return;
     }
 
-    // 2. Carrega a lista de esportes para preencher o select
+    // 2. Carrega a lista de esportes cadastrados na base de dados
     const carregarEsportes = async () => {
       try {
         const lista = await listarEsportes();
         setEsportesDisponiveis(lista);
-        if (lista.length > 0) {
+        
+        // Define o primeiro esporte da lista como selecionado por padrão
+        if (lista && lista.length > 0) {
           setFormulario((prev) => ({ ...prev, esporteNome: lista[0].nome }));
         }
       } catch (erro) {
@@ -61,11 +66,17 @@ export default function CadastrarGrupoEsportivo() {
     e.preventDefault();
 
     if (!formulario.nome || !formulario.descricao || !formulario.esporteNome) {
-      alert("Preencha todos os campos obrigatórios.");
+      alert("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
 
-    const dataAtual = new Date().toISOString().split("T")[0];
+    if (!usuarioLogado || !usuarioLogado.id) {
+      alert("Erro de autenticação: Utilizador não identificado.");
+      return;
+    }
+
+    // Prepara o DTO exatamente como esperado pela classe GrupoEsportivoPostRequestDto do Spring
+    const dataAtual = new Date().toISOString().split("T")[0]; // Formato YYYY-MM-DD
 
     const novoGrupoDTO = {
       nome: formulario.nome,
@@ -75,12 +86,16 @@ export default function CadastrarGrupoEsportivo() {
     };
 
     try {
+      // Envia o DTO e o ID do administrador logado
       await cadastrarGrupo(novoGrupoDTO, usuarioLogado.id);
       alert("Grupo esportivo cadastrado com sucesso!");
       navigate("/grupo-esportivo");
     } catch (erro) {
       console.error("Erro ao cadastrar grupo:", erro);
-      alert("Erro ao cadastrar grupo esportivo. Verifique os dados.");
+      
+      // Exibe a mensagem exata retornada pela BusinessException / ResourceNotFoundException da API, se disponível
+      const mensagemErro = erro.response?.data?.message || "Erro ao cadastrar grupo esportivo. Verifique se o utilizador atual é um Administrador válido e tente novamente.";
+      alert(mensagemErro);
     }
   };
 
