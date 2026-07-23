@@ -8,6 +8,7 @@ import Login from "./infrastructure/pages/Login";
 import GrupoEsportivo from "./infrastructure/pages/GrupoEsportivo";
 import EventoEsportivo from "./infrastructure/pages/EventoEsportivo";
 import Cadastro from "./infrastructure/pages/Cadastro";
+import CadastrarGrupoEsportivo from './infrastructure/pages/CadastrarGrupoEsportivo';
 
 function App() {
   return (
