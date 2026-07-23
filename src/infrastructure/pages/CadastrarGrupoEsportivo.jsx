@@ -86,16 +86,15 @@ export default function CadastrarGrupoEsportivo() {
     };
 
     try {
-      // Envia o DTO e o ID do administrador logado
       await cadastrarGrupo(novoGrupoDTO, usuarioLogado.id);
       alert("Grupo esportivo cadastrado com sucesso!");
       navigate("/grupo-esportivo");
     } catch (erro) {
       console.error("Erro ao cadastrar grupo:", erro);
       
-      // Exibe a mensagem exata retornada pela BusinessException / ResourceNotFoundException da API, se disponível
-      const mensagemErro = erro.response?.data?.message || "Erro ao cadastrar grupo esportivo. Verifique se o utilizador atual é um Administrador válido e tente novamente.";
-      alert(mensagemErro);
+      // Captura a mensagem original enviada pela API Spring Boot
+      const mensagemBackend = erro.response?.data?.message || erro.message || "Erro desconhecido ao cadastrar grupo.";
+      alert(`Falha no cadastro: ${mensagemBackend}`);
     }
   };
 
