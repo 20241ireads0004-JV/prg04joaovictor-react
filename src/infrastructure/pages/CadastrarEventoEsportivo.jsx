@@ -3,8 +3,8 @@ import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { cadastrarEvento } from "../api/eventoApi";
-import { listarLocais, cadastrarLocal } from "../api/localApi";
+import { cadastrarEvento } from "../../api/eventoApi";
+import { listarLocais, cadastrarLocal } from "../../api/localApi";
 
 export default function CadastrarEventoEsportivo() {
   const navigate = useNavigate();
