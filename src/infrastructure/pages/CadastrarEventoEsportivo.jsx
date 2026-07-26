@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
@@ -32,7 +32,7 @@ export default function CadastrarEventoEsportivo() {
   // Lista de locais carregados da API
   const [locais, setLocais] = useState([]);
   
-  // Estado para controlar a exibição do formulário/modal de criação de novo local
+  // Estado para controlar a exibição do formulário de novo local
   const [mostrarModalLocal, setMostrarModalLocal] = useState(false);
   
   // Estado do Novo Local (LocalPostRequestDto)
@@ -47,18 +47,27 @@ export default function CadastrarEventoEsportivo() {
   const [salvandoLocal, setSalvandoLocal] = useState(false);
   const [mensagemErro, setMensagemErro] = useState("");
 
-  // Carrega os locais cadastrados ao carregar a página
-  useEffect(() => {
-    carregarListaLocais();
-  }, []);
-
-  const carregarListaLocais = async () => {
+  /**
+   * Função para carregar os locais cadastrados na API.
+   * Utiliza useCallback para memorizar a função e evitar avisos do ESLint no useEffect.
+   */
+  const carregarListaLocais = useCallback(async () => {
     const dados = await listarLocais();
     setLocais(dados);
-    if (dados.length > 0 && !formData.localId) {
-      setFormData((prev) => ({ ...prev, localId: dados[0].id }));
-    }
-  };
+    
+    // Define o primeiro local como padrão se ainda não houver um selecionado
+    setFormData((prev) => {
+      if (dados.length > 0 && !prev.localId) {
+        return { ...prev, localId: dados[0].id };
+      }
+      return prev;
+    });
+  }, []);
+
+  // Executa o carregamento inicial dos locais ao montar o componente
+  useEffect(() => {
+    carregarListaLocais();
+  }, [carregarListaLocais]);
 
   // Atualização dos campos do formulário do Evento
   const handleChange = (e) => {
@@ -69,7 +78,7 @@ export default function CadastrarEventoEsportivo() {
     }));
   };
 
-  // Atualização dos campos do formulário de Novo Local
+  // Atualização dos campos do formulário do Novo Local
   const handleNovoLocalChange = (e) => {
     const { name, value } = e.target;
     setNovoLocal((prev) => ({
@@ -84,7 +93,6 @@ export default function CadastrarEventoEsportivo() {
     try {
       setSalvandoLocal(true);
       
-      // Envia o LocalPostRequestDto e recebe o LocalGetResponseDto do backend
       const localCriado = await cadastrarLocal(novoLocal);
       
       alert("Local cadastrado com sucesso!");
@@ -104,7 +112,7 @@ export default function CadastrarEventoEsportivo() {
 
     } catch (erro) {
       console.error(erro);
-      alert("Erro ao cadastrar novo local. Verifique os limites de caracteres e tente novamente.");
+      alert("Erro ao cadastrar novo local. Verifique os dados e tente novamente.");
     } finally {
       setSalvandoLocal(false);
     }
@@ -250,7 +258,6 @@ export default function CadastrarEventoEsportivo() {
                       />
                     </div>
 
-                    {/* CAMPO DE SELEÇÃO E CRIAÇÃO DE LOCAL */}
                     <div className="col-md-7">
                       <label htmlFor="localId" className="form-label fw-bold">
                         Local do Evento *
@@ -272,7 +279,6 @@ export default function CadastrarEventoEsportivo() {
                           ))}
                         </select>
 
-                        {/* BOTÃO PARA ABRIR O FORMULÁRIO DE NOVO LOCAL */}
                         <button
                           type="button"
                           className="btn btn-outline-success text-nowrap"
