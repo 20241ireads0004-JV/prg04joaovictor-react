@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { listarGrupos, aceitarMembro, solicitarEntrada } from "../../api/grupoApi";
+import { listarGrupos, aceitarMembro, solicitarEntrada, atualizarGrupo, excluirGrupo } from "../../api/grupoApi";
 
 export default function GrupoEsportivo() {
   const links = [
@@ -15,8 +15,13 @@ export default function GrupoEsportivo() {
   const [loading, setLoading] = useState(true);
   const [usuarioLogado, setUsuarioLogado] = useState(null);
 
+  // ESTADOS PARA CONTROLO DA EDIÇÃO DO GRUPO
+  const [grupoEmEdicao, setGrupoEmEdicao] = useState(null); // Guarda o ID do grupo a ser editado
+  const [novoNome, setNovoNome] = useState("");
+  const [novaDescricao, setNovaDescricao] = useState("");
+
   useEffect(() => {
-    // Obtem o usuario logado no localStorage
+    // Obtém o utilizador logado no localStorage
     const usuarioSalvo = localStorage.getItem("usuarioLogado");
     if (usuarioSalvo) {
       setUsuarioLogado(JSON.parse(usuarioSalvo));
@@ -24,6 +29,7 @@ export default function GrupoEsportivo() {
     carregarGrupos();
   }, []);
 
+  // Carrega a lista de grupos da API
   const carregarGrupos = async () => {
     try {
       setLoading(true);
@@ -36,19 +42,70 @@ export default function GrupoEsportivo() {
     }
   };
 
-  // Funcao para o Administrador aceitar um atleta no grupo
+  // Prepara os campos de entrada para edição
+  const handleIniciarEdicao = (grupo) => {
+    setGrupoEmEdicao(grupo.id);
+    setNovoNome(grupo.nome);
+    setNovaDescricao(grupo.descricao);
+  };
+
+  // Cancela o modo de edição
+  const handleCancelarEdicao = () => {
+    setGrupoEmEdicao(null);
+    setNovoNome("");
+    setNovaDescricao("");
+  };
+
+  // Salva as alterações de Nome e Descrição no backend
+  const handleSalvarEdicao = async (grupoId) => {
+    if (!novoNome.trim() || !novaDescricao.trim()) {
+      alert("Por favor, preencha o nome e a descrição!");
+      return;
+    }
+
+    try {
+      await atualizarGrupo(grupoId, {
+        nome: novoNome,
+        descricao: novaDescricao
+      });
+      alert("Grupo atualizado com sucesso!");
+      setGrupoEmEdicao(null);
+      carregarGrupos(); // Recarrega os grupos para exibir as novidades
+    } catch (erro) {
+      console.error("Erro ao atualizar grupo:", erro);
+      alert("Erro ao atualizar o grupo. Tente novamente.");
+    }
+  };
+
+  // Exclui o grupo após confirmação
+  const handleExcluirGrupo = async (grupoId) => {
+    const confirmacao = window.confirm("Tem certeza que deseja excluir este Grupo Esportivo? Esta ação não pode ser desfeita.");
+    
+    if (!confirmacao) return;
+
+    try {
+      await excluirGrupo(grupoId);
+      alert("Grupo excluído com sucesso!");
+      carregarGrupos(); // Recarrega a lista sem o grupo excluído
+    } catch (erro) {
+      console.error("Erro ao excluir grupo:", erro);
+      alert("Erro ao excluir o grupo.");
+    }
+  };
+
+  // Função para o Administrador aceitar um atleta no grupo
   const handleAceitarAtleta = async (grupoId, atletaId) => {
     try {
       await aceitarMembro(grupoId, atletaId);
       alert("Atleta aceito com sucesso no grupo!");
-      carregarGrupos(); // Recarrega a lista
+      carregarGrupos();
     } catch (erro) {
       console.error(erro);
       alert("Erro ao aceitar atleta.");
     }
   };
 
-  // Funcao para um atleta solicitar entrada no grupo
+  // Função para um atleta solicitar entrada no grupo
   const handleSolicitarEntrada = async (grupoId) => {
     if (!usuarioLogado) {
       alert("Você precisa estar logado para solicitar entrada!");
@@ -84,13 +141,26 @@ export default function GrupoEsportivo() {
           </div>
         ) : (
           grupos.map((grupo) => {
-            // VERIFICAÇÃO: O usuario logado e o Administrador deste grupo?
+            // VERIFICAÇÃO: O utilizador logado é o Administrador deste grupo?
             const ehAdmin = usuarioLogado && grupo.administrador?.id === usuarioLogado.id;
+            const estaEditando = grupoEmEdicao === grupo.id;
 
             return (
               <div className="card shadow mb-5" key={grupo.id}>
                 <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                  <h4 className="mb-0">{grupo.nome}</h4>
+                  {/* Se estiver a editar, mostra um input para o nome */}
+                  {estaEditando ? (
+                    <input
+                      type="text"
+                      className="form-control me-2"
+                      value={novoNome}
+                      onChange={(e) => setNovoNome(e.target.value)}
+                      placeholder="Novo Nome do Grupo"
+                    />
+                  ) : (
+                    <h4 className="mb-0">{grupo.nome}</h4>
+                  )}
+
                   {ehAdmin && (
                     <span className="badge bg-warning text-dark fs-6">
                       Você é o Administrador
@@ -99,7 +169,21 @@ export default function GrupoEsportivo() {
                 </div>
 
                 <div className="card-body">
-                  <p><strong>Descrição:</strong> <br />{grupo.descricao}</p>
+                  {/* Se estiver a editar, mostra uma caixa de texto para a descrição */}
+                  {estaEditando ? (
+                    <div className="mb-3">
+                      <label className="form-label fw-bold">Descrição:</label>
+                      <textarea
+                        className="form-control"
+                        rows="3"
+                        value={novaDescricao}
+                        onChange={(e) => setNovaDescricao(e.target.value)}
+                      />
+                    </div>
+                  ) : (
+                    <p><strong>Descrição:</strong> <br />{grupo.descricao}</p>
+                  )}
+
                   <p><strong>Esporte:</strong> <br />{grupo.esporte?.nome || grupo.esporte}</p>
                   <p><strong>Vagas / Jogadores:</strong> <br />{grupo.esporte?.quantidadeJogadores || "N/A"}</p>
 
@@ -112,9 +196,7 @@ export default function GrupoEsportivo() {
                       grupo.membros.map((atleta) => (
                         <div key={atleta.id} className="col-md-4">
                           <div className="card border-light bg-light p-3">
-                            {/* Nome do Atleta */}
                             <h6 className="fw-bold mb-1 text-dark">{atleta.nome}</h6>
-                            {/* NOME DO GRUPO EXIBIDO ABAIXO DO NOME DO ATLETA */}
                             <small className="text-primary fw-bold">
                               ⚽ Equipe: {grupo.nome}
                             </small>
@@ -148,16 +230,54 @@ export default function GrupoEsportivo() {
                     </div>
                   )}
 
-                  {/* BOTÕES DE AÇÃO COM RESTRIÇÕES */}
-                  <div className="d-flex gap-2 mt-4">
+                  {/* BOTÕES DE AÇÃO COM RESTRIÇÕES DE ADMINISTRADOR */}
+                  <div className="d-flex gap-2 mt-4 flex-wrap">
                     {ehAdmin ? (
-                      <>
-                        {/* Apenas Administrador pode Editar ou Excluir */}
-                        <button className="btn btn-warning text-white">Editar Grupo</button>
-                        <button className="btn btn-danger">Excluir Grupo</button>
-                      </>
+                      estaEditando ? (
+                        <>
+                          {/* Botões exibidos durante a Edição */}
+                          <button 
+                            className="btn btn-success"
+                            onClick={() => handleSalvarEdicao(grupo.id)}
+                          >
+                            Salvar Alterações
+                          </button>
+                          <button 
+                            className="btn btn-secondary"
+                            onClick={handleCancelarEdicao}
+                          >
+                            Cancelar
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          {/* Botão de Editar */}
+                          <button 
+                            className="btn btn-warning text-white fw-bold"
+                            onClick={() => handleIniciarEdicao(grupo)}
+                          >
+                            Editar Grupo
+                          </button>
+
+                          {/* Botão de Excluir */}
+                          <button 
+                            className="btn btn-danger fw-bold"
+                            onClick={() => handleExcluirGrupo(grupo.id)}
+                          >
+                            Excluir Grupo
+                          </button>
+
+                          {/* BOTÃO ADICIONADO: Cadastrar Evento Esportivo */}
+                          <Link 
+                            to={`/cadastrar-evento-esportivo?grupoId=${grupo.id}`} 
+                            className="btn btn-info text-white fw-bold"
+                          >
+                            + Cadastrar Evento Esportivo
+                          </Link>
+                        </>
+                      )
                     ) : (
-                      /* Outros usuarios podem solicitar entrada */
+                      /* Outros utilizadores podem solicitar entrada */
                       <button 
                         className="btn btn-outline-primary"
                         onClick={() => handleSolicitarEntrada(grupo.id)}

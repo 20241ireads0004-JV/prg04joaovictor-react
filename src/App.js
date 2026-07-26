@@ -8,7 +8,8 @@ import Login from "./infrastructure/pages/Login";
 import GrupoEsportivo from "./infrastructure/pages/GrupoEsportivo";
 import EventoEsportivo from "./infrastructure/pages/EventoEsportivo";
 import Cadastro from "./infrastructure/pages/Cadastro";
-import CadastrarGrupoEsportivo from './infrastructure/pages/CadastrarGrupoEsportivo';
+import CadastrarGrupoEsportivo from "./infrastructure/pages/CadastrarGrupoEsportivo";
+import CadastrarEventoEsportivo from "./infrastructure/pages/CadastrarEventoEsportivo";
 
 function App() {
   return (
@@ -42,7 +43,13 @@ function App() {
         />
 
         <Route path="/cadastrar-grupo-esportivo" 
-        element={<CadastrarGrupoEsportivo />} />
+        element={<CadastrarGrupoEsportivo />} 
+        />
+
+        <Route path="/cadastrar-evento-esportivo" 
+        element={<CadastrarEventoEsportivo />} 
+        />
+
       </Routes>
 
     </BrowserRouter>
