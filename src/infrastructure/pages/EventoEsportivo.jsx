@@ -27,8 +27,9 @@ export default function EventoEsportivo() {
   });
 
   useEffect(() => {
-    // CORREÇÃO CRUCIAL: A chave salva no LoginForm é 'usuarioLogado'
+    // 1. Carrega o usuário logado a partir do localStorage
     const usuarioSalvo = JSON.parse(localStorage.getItem("usuarioLogado") || "{}");
+    console.log("👤 [DEBUG] Usuário Logado do LocalStorage:", usuarioSalvo);
     setUsuarioLogado(usuarioSalvo);
 
     carregarEventos();
@@ -40,6 +41,7 @@ export default function EventoEsportivo() {
       setErro("");
       const dados = await listarEventos();
       const lista = Array.isArray(dados) ? dados : dados?.content || [];
+      console.log("⚽ [DEBUG] Lista de Eventos retornada do Backend:", lista);
       setEventos(lista);
     } catch (err) {
       console.error("Erro ao carregar eventos:", err);
@@ -50,25 +52,42 @@ export default function EventoEsportivo() {
   };
 
   /**
-   * Validação flexível e segura do Administrador
+   * Validação Ultra-Robusta do Administrador do Grupo
    */
   const ehAdministradorDoGrupo = (evento) => {
     if (!usuarioLogado || !evento?.grupoEsportivo) {
       return false;
     }
 
-    // Tenta encontrar o ID do usuário logado
+    // Tenta capturar o ID e o E-mail do usuário logado
     const idUsuario = usuarioLogado.id || usuarioLogado.usuarioId;
+    const emailUsuario = usuarioLogado.email || usuarioLogado.login;
 
-    // Tenta encontrar o ID do admin do grupo nas várias estruturas possíveis do Spring
     const grupo = evento.grupoEsportivo;
-    const idAdmin = grupo.administrador?.id || grupo.admin?.id || grupo.administradorId || grupo.adminId;
 
-    if (!idUsuario || !idAdmin) {
-      return false;
+    // Tenta capturar o ID do Administrador no Objeto do Grupo (várias estruturas possíveis do Spring)
+    const idAdmin =
+      grupo.administrador?.id ||
+      grupo.admin?.id ||
+      grupo.administradorId ||
+      grupo.adminId;
+
+    // Tenta capturar o E-mail do Administrador
+    const emailAdmin =
+      grupo.administrador?.email ||
+      grupo.admin?.email;
+
+    // Comparação por ID
+    if (idUsuario && idAdmin && String(idUsuario) === String(idAdmin)) {
+      return true;
     }
 
-    return String(idUsuario) === String(idAdmin);
+    // Comparação por E-mail (fallback de segurança)
+    if (emailUsuario && emailAdmin && emailUsuario.toLowerCase() === emailAdmin.toLowerCase()) {
+      return true;
+    }
+
+    return false;
   };
 
   const handleExcluir = async (id) => {
@@ -173,6 +192,7 @@ export default function EventoEsportivo() {
                         Ver Detalhes
                       </button>
 
+                      {/* BOTÕES DE EDITAR E EXCLUIR */}
                       {isAdmin && (
                         <div className="d-flex gap-2 w-100 w-md-auto">
                           <button
@@ -198,7 +218,7 @@ export default function EventoEsportivo() {
         )}
       </main>
 
-      {/* MODAL DETALHES COM ENDEREÇO */}
+      {/* MODAL DETALHES */}
       {eventoDetalhes && (
         <div className="modal show d-block bg-dark bg-opacity-50" tabIndex="-1">
           <div className="modal-dialog modal-dialog-centered">
@@ -220,10 +240,9 @@ export default function EventoEsportivo() {
                 {eventoDetalhes.local ? (
                   <div className="bg-light p-3 rounded border">
                     <p className="mb-1"><strong>Nome do Local:</strong> {eventoDetalhes.local.nome || "Não informado"}</p>
-                    <p className="mb-1"><strong>Rua/Avenida:</strong> {eventoDetalhes.local.rua || eventoDetalhes.local.logradouro || "N/A"}, Nº {eventoDetalhes.local.numero || "S/N"}</p>
+                    <p className="mb-1"><strong>Rua/Avenida:</strong> {eventoDetalhes.local.rua || eventoDetalhes.local.logradouro || eventoDetalhes.local.endereco || "N/A"}</p>
                     <p className="mb-1"><strong>Bairro:</strong> {eventoDetalhes.local.bairro || "N/A"}</p>
-                    <p className="mb-1"><strong>Cidade/UF:</strong> {eventoDetalhes.local.cidade || "N/A"} - {eventoDetalhes.local.estado || "N/A"}</p>
-                    <p className="mb-0"><strong>CEP:</strong> {eventoDetalhes.local.cep || "N/A"}</p>
+                    <p className="mb-1"><strong>Cidade/UF:</strong> {eventoDetalhes.local.cidade || "N/A"}</p>
                   </div>
                 ) : (
                   <p className="text-muted italic">Nenhum endereço cadastrado para este evento.</p>
