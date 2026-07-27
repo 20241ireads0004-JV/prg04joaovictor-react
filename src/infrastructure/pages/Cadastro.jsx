@@ -49,23 +49,43 @@ export default function CadastroForm() {
       return;
     }
 
-    // 2. Validação de igualdade das senhas
+    // 2. Validação do tamanho do nome (min 3 caracteres)
+    if (usuario.nome.trim().length < 3) {
+      setErro("O nome deve ter no mínimo 3 caracteres.");
+      return;
+    }
+
+    // 3. Validação do tamanho da senha (Spring Boot exige entre 8 e 20 caracteres)
+    if (usuario.senha.length < 8 || usuario.senha.length > 20) {
+      setErro("A senha deve ter entre 8 e 20 caracteres.");
+      return;
+    }
+
+    // 4. Validação de igualdade das senhas
     if (usuario.senha !== usuario.confirmarSenha) {
       setErro("As senhas não coincidem.");
       return;
     }
 
-    // 3. Processamento do cadastro na API
+    // 5. Validação do padrão do telefone (@Pattern do Java)
+    // Aceita formatos como: 74999999999, (74) 99999-9999 ou 7499999-9999
+    const regexTelefone = /^\(?\d{2}\)?\s?9?\d{4}-?\d{4}$/;
+    if (!regexTelefone.test(usuario.telefone.trim())) {
+      setErro("Formato de telefone inválido. Exemplo: 74999999999 ou (74) 99999-9999.");
+      return;
+    }
+
+    // 6. Processamento do cadastro na API
     try {
       setCarregando(true);
 
       // Chamada para o serviço de API configurado
       await cadastrarUsuario({
-        nome: usuario.nome,
-        email: usuario.email,
-        login: usuario.email, // O DTO do Spring Boot exige o campo login
+        nome: usuario.nome.trim(),
+        email: usuario.email.trim(),
+        login: usuario.email.trim(), // O DTO do Spring Boot exige o campo login
         senha: usuario.senha,
-        telefone: usuario.telefone,
+        telefone: usuario.telefone.trim(),
         status: true, // Define o utilizador como ativo por padrão
       });
 
@@ -78,8 +98,13 @@ export default function CadastroForm() {
 
     } catch (error) {
       console.error("Erro no cadastro:", error);
-      // Exibe mensagem amigável retornado pela API ou mensagem genérica
-      setErro("Falha ao cadastrar utilizador. Verifique os dados ou tente novamente.");
+      
+      // Captura mensagem detalhada se o backend responder com estrutura de erro
+      if (error.response && error.response.data && error.response.data.message) {
+        setErro(`Erro: ${error.response.data.message}`);
+      } else {
+        setErro("Falha ao cadastrar utilizador. Verifique os dados ou tente novamente.");
+      }
     } finally {
       setCarregando(false);
     }
@@ -129,11 +154,14 @@ export default function CadastroForm() {
                   type="tel"
                   name="telefone"
                   className="form-control form-control-lg"
-                  placeholder="Telefone"
+                  placeholder="Telefone (ex: 74999999999)"
                   value={usuario.telefone}
                   onChange={handleChange}
                   disabled={carregando}
                 />
+                <small className="text-muted ps-1">
+                  Ex: 74999999999 ou (74) 99999-9999
+                </small>
               </div>
 
               {/* CAMPO SENHA */}
@@ -142,7 +170,7 @@ export default function CadastroForm() {
                   type="password"
                   name="senha"
                   className="form-control form-control-lg"
-                  placeholder="Senha"
+                  placeholder="Senha (mínimo 8 caracteres)"
                   value={usuario.senha}
                   onChange={handleChange}
                   disabled={carregando}

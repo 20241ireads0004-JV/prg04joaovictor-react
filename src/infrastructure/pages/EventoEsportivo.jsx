@@ -52,44 +52,48 @@ export default function EventoEsportivo() {
   };
 
   /**
-   * Validação Ultra-Robusta do Administrador do Grupo
-   */
-  const ehAdministradorDoGrupo = (evento) => {
-    if (!usuarioLogado || !evento?.grupoEsportivo) {
-      return false;
-    }
-
-    // Tenta capturar o ID e o E-mail do usuário logado
-    const idUsuario = usuarioLogado.id || usuarioLogado.usuarioId;
-    const emailUsuario = usuarioLogado.email || usuarioLogado.login;
-
-    const grupo = evento.grupoEsportivo;
-
-    // Tenta capturar o ID do Administrador no Objeto do Grupo (várias estruturas possíveis do Spring)
-    const idAdmin =
-      grupo.administrador?.id ||
-      grupo.admin?.id ||
-      grupo.administradorId ||
-      grupo.adminId;
-
-    // Tenta capturar o E-mail do Administrador
-    const emailAdmin =
-      grupo.administrador?.email ||
-      grupo.admin?.email;
-
-    // Comparação por ID
-    if (idUsuario && idAdmin && String(idUsuario) === String(idAdmin)) {
-      return true;
-    }
-
-    // Comparação por E-mail (fallback de segurança)
-    if (emailUsuario && emailAdmin && emailUsuario.toLowerCase() === emailAdmin.toLowerCase()) {
-      return true;
-    }
-
+ * Validação segura do Administrador do Grupo do Evento
+ */
+const ehAdministradorDoGrupo = (evento) => {
+  if (!usuarioLogado || (!usuarioLogado.id && !usuarioLogado.usuarioId)) {
     return false;
-  };
+  }
 
+  // Detecta se o grupo veio no campo 'grupo' ou 'grupoEsportivo'
+  const grupo = evento?.grupo || evento?.grupoEsportivo;
+
+  // CASO 1: Se o evento NÃO possui grupo associado (grupo é null),
+  // assumimos que é um evento geral e permitimos a edição por qualquer usuário logado.
+  if (!grupo) {
+    return true; 
+  }
+
+  // CASO 2: Se o evento possui grupo, identificamos os IDs
+  const idUsuario = usuarioLogado.id || usuarioLogado.usuarioId;
+  const emailUsuario = usuarioLogado.email || usuarioLogado.login;
+
+  const idAdmin =
+    grupo.administrador?.id ||
+    grupo.admin?.id ||
+    grupo.administradorId ||
+    grupo.adminId;
+
+  const emailAdmin =
+    grupo.administrador?.email ||
+    grupo.admin?.email;
+
+  // Validação por ID
+  if (idUsuario && idAdmin && String(idUsuario) === String(idAdmin)) {
+    return true;
+  }
+
+  // Validação por E-mail (fallback)
+  if (emailUsuario && emailAdmin && emailUsuario.toLowerCase() === emailAdmin.toLowerCase()) {
+    return true;
+  }
+
+  return false;
+};
   const handleExcluir = async (id) => {
     if (!window.confirm("Tem certeza que deseja excluir este evento esportivo?")) {
       return;
@@ -176,7 +180,7 @@ export default function EventoEsportivo() {
                   <div className="row align-items-center">
                     <div className="col-md-8">
                       <h5 className="card-title text-success fw-bold mb-3">
-                        {evento.grupoEsportivo?.nome || evento.nome || "Evento Esportivo"}
+                      {evento.grupo?.nome || evento.grupoEsportivo?.nome || evento.nome || "Evento Esportivo"}
                       </h5>
                       <p className="mb-1"><strong>Data:</strong> {evento.data || "Não informada"}</p>
                       <p className="mb-1"><strong>Horário:</strong> {evento.horario || "Não informado"}</p>
