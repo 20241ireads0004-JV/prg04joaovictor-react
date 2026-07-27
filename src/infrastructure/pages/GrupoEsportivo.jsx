@@ -56,29 +56,42 @@ export default function GrupoEsportivo() {
     setNovaDescricao("");
   };
 
-  // Salva as alterações de Nome e Descrição no backend
+  /**
+ * Salva as alterações do Grupo Esportivo no backend.
+ * @param {Object} grupo - Objeto contendo os dados do grupo em edição.
+ */
 const handleSalvarEdicao = async (grupo) => {
+  // 1. Descobre o ID correto do grupo (suporta grupo.id ou grupoEmEdicao.id)
+  const grupoId = grupo?.id || grupoEmEdicao?.id || grupo;
+
+  // 2. Validação de segurança: se o ID for indefindo ou nulo, interrompe a chamada
+  if (!grupoId || grupoId === "undefined") {
+    alert("Erro: Não foi possível identificar o ID do grupo para atualização.");
+    console.error("ID do grupo está indefinido:", grupo);
+    return;
+  }
+
+  // 3. Validação dos campos obrigatórios do formulário
   if (!novoNome.trim() || !novaDescricao.trim()) {
     alert("Por favor, preencha o nome e a descrição!");
     return;
   }
 
   try {
-    // Enviamos o DTO completo conforme exigido pelo GrupoEsportivoPostRequestDto
-    await atualizarGrupo(grupo.id, {
+    // 4. Envia o ID válido e o DTO completo para o backend
+    await atualizarGrupo(grupoId, {
       nome: novoNome,
       descricao: novaDescricao,
-      esporteNome: grupo.esporte?.nome || grupo.esporteNome || "Futsal", // Preserva o esporte atual
-      vagas: grupo.vagas || 10                                           // Preserva a quantidade de vagas
+      esporteNome: grupo?.esporte?.nome || grupo?.esporteNome || "Futsal",
+      vagas: grupo?.vagas || 10
     });
 
     alert("Grupo atualizado com sucesso!");
     setGrupoEmEdicao(null);
-    carregarGrupos(); // Recarrega os grupos para exibir as novidades
+    carregarGrupos(); // Recarrega os grupos na tela
+
   } catch (erro) {
     console.error("Erro ao atualizar grupo:", erro);
-    
-    // Exibe detalhes da mensagem do backend caso exista (ex: nome duplicado)
     const mensagemErro = erro.response?.data?.message || "Erro ao atualizar o grupo. Tente novamente.";
     alert(mensagemErro);
   }
@@ -245,7 +258,7 @@ const handleSalvarEdicao = async (grupo) => {
                           {/* Botões exibidos durante a Edição */}
                           <button 
                             className="btn btn-success"
-                            onClick={() => handleSalvarEdicao(grupo.id)}
+                            onClick={() => handleSalvarEdicao(grupoEmEdicao)}
                           >
                             Salvar Alterações
                           </button>
