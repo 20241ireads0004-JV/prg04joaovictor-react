@@ -68,13 +68,6 @@ export default function Home() {
                   >
                     Ver Eventos
                   </Link>
-
-                  <Link
-                    to="/login"
-                    className="btn btn-outline-primary btn-lg"
-                  >
-                    Entrar
-                  </Link>
                 </div>
               </div>
 
