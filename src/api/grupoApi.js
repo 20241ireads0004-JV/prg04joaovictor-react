@@ -1,13 +1,10 @@
-// src/api/grupoApi.js
-
 import api from "./api";
 
 /**
- * Cadastra um novo grupo esportivo no backend.
- * Qualquer usuário logado pode criar e se tornará o administrador deste grupo.
+ * Cadastra um novo grupo esportivo no backend Spring Boot.
  * @param {Object} grupoDTO - Dados do grupo (nome, descricao, dataCriacao, esporteNome).
- * @param {number|string} usuarioId - ID do utilizador logado que será o criador/admin.
- * @returns {Promise<Object>} Retorna os dados do grupo cadastrado.
+ * @param {number|string} usuarioId - ID do utilizador logado (será o administrador).
+ * @returns {Promise<Object>} Grupo cadastrado retornado do backend.
  */
 export const cadastrarGrupo = async (grupoDTO, usuarioId) => {
   try {
@@ -20,14 +17,15 @@ export const cadastrarGrupo = async (grupoDTO, usuarioId) => {
 };
 
 /**
- * Solicita a entrada de um atleta/usuário num grupo esportivo.
- * Atualizado para alinhar com o prefixo /grupos-esportivos e parâmetros do Spring Boot.
+ * Solicita a entrada de um atleta/utilizador num grupo esportivo.
+ * Rota mapeada: POST /grupos-esportivos/{grupoId}/solicitar-entrada/{atletaId}
+ * 
+ * @param {number|string} grupoId - ID do grupo esportivo.
+ * @param {number|string} atletaId - ID do atleta/utilizador logado.
  */
-export const solicitarEntrada = async (grupoId, usuarioId) => {
+export const solicitarEntrada = async (grupoId, atletaId) => {
   try {
-    // Tenta o endpoint padronizado do Spring Boot
-    // Se o teu backend aceita parâmetro de URL ou objeto no corpo:
-    const response = await api.post(`/grupos-esportivos/${grupoId}/solicitar`, { usuarioId });
+    const response = await api.post(`/grupos-esportivos/${grupoId}/solicitar-entrada/${atletaId}`);
     return response.data;
   } catch (erro) {
     console.error("Erro ao solicitar entrada no grupo:", erro);
@@ -35,36 +33,42 @@ export const solicitarEntrada = async (grupoId, usuarioId) => {
   }
 };
 
-// Aceitar/Aprovar Atleta no grupo (Apenas Administrador)
-export const aceitarMembro = async (grupoId, atletaId) => {
+/**
+ * Aceita um atleta no grupo esportivo (ação do Administrador).
+ * Rota mapeada: POST /grupos-esportivos/{grupoId}/aceitar-atleta/{atletaId}/{adminIdLogado}
+ * 
+ * @param {number|string} grupoId - ID do grupo esportivo.
+ * @param {number|string} atletaId - ID do atleta a ser aceite.
+ * @param {number|string} adminIdLogado - ID do administrador logado.
+ */
+export const aceitarMembro = async (grupoId, atletaId, adminIdLogado) => {
   try {
-    const response = await api.post(`/grupos/${grupoId}/aceitar-membro`, { atletaId });
+    const response = await api.post(
+      `/grupos-esportivos/${grupoId}/aceitar-atleta/${atletaId}/${adminIdLogado}`
+    );
     return response.data;
   } catch (erro) {
-    console.error("Erro ao aceitar membro:", erro);
+    console.error("Erro ao aceitar atleta no grupo:", erro);
     throw erro;
   }
 };
 
 /**
- * Lista os grupos esportivos com paginação do Spring Boot.
- * Extrai e retorna diretamente o array contido na propriedade 'content'.
- * @param {number} page - Número da página desejada (padrão: 0).
- * @param {number} size - Quantidade de itens por página (padrão: 10).
- * @returns {Promise<Array>} Array com a lista de grupos.
+ * Lista todos os grupos esportivos cadastrados com suporte a paginação.
+ * @param {number} page - Número da página (padrão: 0).
+ * @param {number} size - Itens por página (padrão: 10).
+ * @returns {Promise<Array>} Lista de grupos.
  */
 export const listarGrupos = async (page = 0, size = 10) => {
   try {
     const response = await api.get(`/grupos-esportivos/findAll?page=${page}&size=${size}`);
     
-    // Tratamento seguro: se o Spring retornar um Page, acessa 'content'. 
-    // Se retornar uma lista direta, usa 'data'. Se falhar, retorna [].
+    // Tratamento para extrair a lista dentro de 'content' do Spring Pageable
     if (response.data && Array.isArray(response.data.content)) {
       return response.data.content;
     } else if (Array.isArray(response.data)) {
       return response.data;
     }
-    
     return [];
   } catch (erro) {
     console.error("Erro ao listar grupos esportivos:", erro);
@@ -73,9 +77,8 @@ export const listarGrupos = async (page = 0, size = 10) => {
 };
 
 /**
- * Busca um grupo esportivo pelo seu ID.
- * @param {number|string} id - Identificador único do grupo.
- * @returns {Promise<Object>} Dados do grupo encontrado.
+ * Busca um grupo esportivo específico pelo seu ID.
+ * @param {number|string} id - ID do grupo.
  */
 export const buscarGrupo = async (id) => {
   try {
@@ -88,10 +91,9 @@ export const buscarGrupo = async (id) => {
 };
 
 /**
- * Atualiza um grupo esportivo existente.
- * @param {number|string} id - Identificador do grupo.
- * @param {Object} grupo - Objeto com os novos dados do grupo.
- * @returns {Promise<Object>} Dados do grupo atualizado.
+ * Atualiza os dados de um grupo esportivo existente.
+ * @param {number|string} id - ID do grupo a ser atualizado.
+ * @param {Object} grupo - Novos dados do grupo.
  */
 export const atualizarGrupo = async (id, grupo) => {
   try {
@@ -104,9 +106,8 @@ export const atualizarGrupo = async (id, grupo) => {
 };
 
 /**
- * Exclui um grupo esportivo pelo seu ID.
- * @param {number|string} id - Identificador do grupo a ser removido.
- * @returns {Promise<Object>} Resposta de confirmação do backend.
+ * Exclui um grupo esportivo do sistema pelo seu ID.
+ * @param {number|string} id - ID do grupo a eliminar.
  */
 export const excluirGrupo = async (id) => {
   try {

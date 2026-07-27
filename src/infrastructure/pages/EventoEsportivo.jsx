@@ -52,26 +52,29 @@ export default function EventoEsportivo() {
   };
 
   /**
- * Validação segura do Administrador do Grupo do Evento
+ * Validação estrita do Administrador do Grupo do Evento
  */
 const ehAdministradorDoGrupo = (evento) => {
+  // 1. Se não houver usuário logado, nega a permissão
   if (!usuarioLogado || (!usuarioLogado.id && !usuarioLogado.usuarioId)) {
     return false;
   }
 
-  // Detecta se o grupo veio no campo 'grupo' ou 'grupoEsportivo'
+  // Detecta se o grupo veio na propriedade 'grupo' ou 'grupoEsportivo'
   const grupo = evento?.grupo || evento?.grupoEsportivo;
 
-  // CASO 1: Se o evento NÃO possui grupo associado (grupo é null),
-  // assumimos que é um evento geral e permitimos a edição por qualquer usuário logado.
+  // 2. CORREÇÃO DE SEGURANÇA:
+  // Se o evento NÃO possui um grupo associado (grupo é null/undefined),
+  // um usuário comum NÃO deve poder editar ou excluir. Retorna false.
   if (!grupo) {
-    return true; 
+    return false;
   }
 
-  // CASO 2: Se o evento possui grupo, identificamos os IDs
+  // 3. Extrai identificadores do usuário logado
   const idUsuario = usuarioLogado.id || usuarioLogado.usuarioId;
   const emailUsuario = usuarioLogado.email || usuarioLogado.login;
 
+  // 4. Extrai identificadores do administrador do grupo
   const idAdmin =
     grupo.administrador?.id ||
     grupo.admin?.id ||
@@ -82,18 +85,19 @@ const ehAdministradorDoGrupo = (evento) => {
     grupo.administrador?.email ||
     grupo.admin?.email;
 
-  // Validação por ID
+  // Comparação por ID
   if (idUsuario && idAdmin && String(idUsuario) === String(idAdmin)) {
     return true;
   }
 
-  // Validação por E-mail (fallback)
+  // Comparação por E-mail
   if (emailUsuario && emailAdmin && emailUsuario.toLowerCase() === emailAdmin.toLowerCase()) {
     return true;
   }
 
   return false;
 };
+
   const handleExcluir = async (id) => {
     if (!window.confirm("Tem certeza que deseja excluir este evento esportivo?")) {
       return;
