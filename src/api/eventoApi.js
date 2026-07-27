@@ -78,7 +78,7 @@ export const atualizarEvento = async (id, eventoDTO) => {
  * @param {number|string} id - Identificador do evento a ser removido.
  * @returns {Promise<Object>} Resposta de confirmação do backend.
  */
-export const excluirEvento = async (id) => {
+export const deletarEvento = async (id) => {
   try {
     const response = await api.delete(`/eventos-esportivos/delete/${id}`);
     return response.data;
