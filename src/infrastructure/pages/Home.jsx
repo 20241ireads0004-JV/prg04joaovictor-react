@@ -74,7 +74,7 @@ export default function Home() {
               {/* IMAGEM EM DESTAQUE */}
               <div className="col-lg-6 text-center mt-5 mt-lg-0">
                 <img
-                  src="/hero.png"
+                  src="../infrastructure/assets/images/hero.png"
                   alt="Pessoas praticando esportes"
                   className="img-fluid rounded shadow"
                 />

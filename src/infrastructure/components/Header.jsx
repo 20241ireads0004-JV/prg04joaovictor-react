@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
  * @param {string} titulo - Título a ser exibido no cabeçalho (opcional)
  */
 export default function Header({ 
-  logo = "./logo.png", 
+  logo = "../infrastructure/assets/images/logo.png", 
   titulo = "TODO ESPORTE" 
 }) {
   return (

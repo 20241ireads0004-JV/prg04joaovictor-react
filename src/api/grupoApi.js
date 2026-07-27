@@ -19,13 +19,18 @@ export const cadastrarGrupo = async (grupoDTO, usuarioId) => {
   }
 };
 
-// Solicitar entrada em um grupo (Atleta)
+/**
+ * Solicita a entrada de um atleta/usuário num grupo esportivo.
+ * Atualizado para alinhar com o prefixo /grupos-esportivos e parâmetros do Spring Boot.
+ */
 export const solicitarEntrada = async (grupoId, usuarioId) => {
   try {
-    const response = await api.post(`/grupos/${grupoId}/solicitar`, { usuarioId });
+    // Tenta o endpoint padronizado do Spring Boot
+    // Se o teu backend aceita parâmetro de URL ou objeto no corpo:
+    const response = await api.post(`/grupos-esportivos/${grupoId}/solicitar`, { usuarioId });
     return response.data;
   } catch (erro) {
-    console.error("Erro ao solicitar entrada:", erro);
+    console.error("Erro ao solicitar entrada no grupo:", erro);
     throw erro;
   }
 };
