@@ -57,25 +57,32 @@ export default function GrupoEsportivo() {
   };
 
   // Salva as alterações de Nome e Descrição no backend
-  const handleSalvarEdicao = async (grupoId) => {
-    if (!novoNome.trim() || !novaDescricao.trim()) {
-      alert("Por favor, preencha o nome e a descrição!");
-      return;
-    }
+const handleSalvarEdicao = async (grupo) => {
+  if (!novoNome.trim() || !novaDescricao.trim()) {
+    alert("Por favor, preencha o nome e a descrição!");
+    return;
+  }
 
-    try {
-      await atualizarGrupo(grupoId, {
-        nome: novoNome,
-        descricao: novaDescricao
-      });
-      alert("Grupo atualizado com sucesso!");
-      setGrupoEmEdicao(null);
-      carregarGrupos(); // Recarrega os grupos para exibir as novidades
-    } catch (erro) {
-      console.error("Erro ao atualizar grupo:", erro);
-      alert("Erro ao atualizar o grupo. Tente novamente.");
-    }
-  };
+  try {
+    // Enviamos o DTO completo conforme exigido pelo GrupoEsportivoPostRequestDto
+    await atualizarGrupo(grupo.id, {
+      nome: novoNome,
+      descricao: novaDescricao,
+      esporteNome: grupo.esporte?.nome || grupo.esporteNome || "Futsal", // Preserva o esporte atual
+      vagas: grupo.vagas || 10                                           // Preserva a quantidade de vagas
+    });
+
+    alert("Grupo atualizado com sucesso!");
+    setGrupoEmEdicao(null);
+    carregarGrupos(); // Recarrega os grupos para exibir as novidades
+  } catch (erro) {
+    console.error("Erro ao atualizar grupo:", erro);
+    
+    // Exibe detalhes da mensagem do backend caso exista (ex: nome duplicado)
+    const mensagemErro = erro.response?.data?.message || "Erro ao atualizar o grupo. Tente novamente.";
+    alert(mensagemErro);
+  }
+};
 
   // Exclui o grupo após confirmação
   const handleExcluirGrupo = async (grupoId) => {
